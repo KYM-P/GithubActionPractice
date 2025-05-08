@@ -19,9 +19,9 @@ jobs:
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             -d '{
-              "tag_name": "v${{ github.event.pull_request.number }}",  # PR 번호를 태그로 사용
-              "name": "${{ github.event.pull_request.title }}",  # PR 제목
-              "body": "${{ github.event.pull_request.body }}",  # PR 본문
+              "tag_name": "v${{ github.event.pull_request.number }}",
+              "name": "${{ github.event.pull_request.title }}",
+              "body": "${{ github.event.pull_request.body }}"
               "draft": true,
               "prerelease": false,
               "target_commitish": "production"  # production 브랜치
