@@ -4,6 +4,7 @@ on:
     types: [closed]
     branches:
       - production
+
 jobs:
   release-drafter:
     runs-on: ubuntu-latest
@@ -18,10 +19,10 @@ jobs:
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             -d '{
-	      "tag_name": "'"tag"'",
-              "name": "'"title"'",
-              "body": "'"body"'",
+              "tag_name": "v${{ github.event.pull_request.number }}",  # PR 번호를 태그로 사용
+              "name": "${{ github.event.pull_request.title }}",  # PR 제목
+              "body": "${{ github.event.pull_request.body }}",  # PR 본문
               "draft": true,
               "prerelease": false,
-              "target_commitish": "'"main"'"
+              "target_commitish": "production"  # production 브랜치
             }'
