@@ -6,7 +6,7 @@ on:
       - production
 jobs:
   release-drafter:
-    runs-on: ubuntu-lastest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout the pr
         uses: actions/checkout@v4
