@@ -28,7 +28,7 @@ jobs:
               \"target_commitish\": \"production\",
               \"name\": \"$TITLE\",
               \"body\": \"$BODY\",
-              \"draft\": true,
+              \"draft\": false,
               \"prerelease\": false,
               \"generate_release_notes\": false
             }"
