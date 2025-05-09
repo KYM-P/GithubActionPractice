@@ -30,7 +30,7 @@ jobs:
           tag="${{ steps.get_release_version.outputs.version }}"
           title="$tag"
           body="${{ github.event.pull_request.body }}"
-          modified_body=$(echo -e "$body" | sed 's/\n/\|/g')
+          modified_body=$(echo -e "$body" | tr '\n' '|')
           echo "Modified Body: $modified_body"
 
           curl -L \
