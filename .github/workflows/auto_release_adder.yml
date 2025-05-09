@@ -23,6 +23,7 @@ jobs:
           bodyData="${{ steps.create_release_body.outputs.release_body }}"
           echo "$bodyData"
           body=$(echo "$bodyData" | sed 's/|#@/\n/g')
+          echo "$body"
           curl -L \
             -X POST \
             -H "Accept: application/vnd.github+json" \
