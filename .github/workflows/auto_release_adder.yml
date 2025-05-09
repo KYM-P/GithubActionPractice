@@ -29,8 +29,7 @@ jobs:
         run: |
           tag="${{ steps.get_release_version.outputs.version }}"
           title="$tag"
-          body="개
-          행"
+          body="${{ github.event.pull_request.body }}"
 
           curl -L \
             -X POST \
@@ -42,7 +41,7 @@ jobs:
               \"tag_name\": \"$tag\",
               \"target_commitish\": \"production\",
               \"name\": \"$title\",
-              \"body\": \"$body\",
+              \"body\": \"개\n행\n문\n자\",
               \"draft\": false,
               \"prerelease\": false,
               \"generate_release_notes\": false
