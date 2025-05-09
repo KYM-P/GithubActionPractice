@@ -41,7 +41,7 @@ jobs:
               \"tag_name\": \"$tag\",
               \"target_commitish\": \"production\",
               \"name\": \"$title\",
-              \"body\": \"$(echo "$body" | jq -Rs .)\",
+              \"body\": \"${{ github.event.pull_request.body }}\",
               \"draft\": false,
               \"prerelease\": false,
               \"generate_release_notes\": false
