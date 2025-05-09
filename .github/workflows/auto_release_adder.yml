@@ -45,7 +45,8 @@ jobs:
         run: |
            if [ "${{ steps.create_release_body.outputs.release_version }}" == "NO_VERSION" ]; then
             echo "Fail: Could not found the version code "
+           fi
            if [ "${{ steps.create_release_body.outputs.release_body }}" == "NO_BODY" ]; then
             echo "Fail: Could not found the body"
-
+           fi
 
