@@ -1,7 +1,9 @@
 import java.io.File
 
-const val NO_VERSION_DATA = "NO_VERSION_DATA"
-const val NO_BODY_DATA = "NO_BODY_DATA"
+companion object {
+    const val NO_VERSION_DATA = "NO_VERSION_DATA"
+    const val NO_BODY_DATA = "NO_BODY_DATA"
+}
 
 fun searchReleaseVersion(prBody: String): String {
     val versionRegex = Regex("v\\d+\\.\\d+\\.\\d+")

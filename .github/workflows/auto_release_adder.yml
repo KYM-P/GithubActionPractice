@@ -18,7 +18,7 @@ jobs:
 
       - name: Add Release 
         run: |
-          TAG="v1.0.0"
+          TAG="${{ steps.create_release_body.outputs.release_version }}"
           TITLE="$TAG"
           BODY="${{ steps.create_release_body.outputs.release_body }}"
           curl -L \
