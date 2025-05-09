@@ -21,8 +21,10 @@ fun restoreOutput(releaseVersion: String, releaseBody: String) {
 
 fun main() {
     val prBody = args.firstOrNull() ?: NO_BODY_DATA
-    var version = searchReleaseVersion(prBody = prBody)
-    var body = searchReleaseBody(prBody = prBody)
+    //var version = searchReleaseVersion(prBody = prBody)
+    var version = "v1.0.0"
+    //var body = searchReleaseBody(prBody = prBody)
+    var body = prBody
     restoreOutput(releaseVersion = version, releaseBody = body)
 }
 
