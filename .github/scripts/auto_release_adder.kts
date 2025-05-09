@@ -15,8 +15,8 @@ fun searchReleaseBody(prBody: String): String {
 
 fun restoreOutput(releaseVersion: String, releaseBody: String) {
     val outputPath = System.getenv("GITHUB_OUTPUT")
-    File(outputPath).appendText("release_version=$releaseVersion \n")
-    File(outputPath).appendText("release_body=$releaseBody \n")
+    File(outputPath).appendText("release_version=${releaseVersion}\n")
+    File(outputPath).appendText("release_body=${releaseBody}\n")
 }
 
 fun stringTest(string: String): String {
