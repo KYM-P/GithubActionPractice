@@ -23,7 +23,7 @@ jobs:
 
       - name: Add Release 
         run: |
-          tag="${{ steps.get_release_version.outputs.version }}"
+          tag="v1.0.0"
           title="$tag"
           body="${{ github.event.pull_request.body }}"
           curl -L \
