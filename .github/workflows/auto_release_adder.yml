@@ -1,4 +1,5 @@
 name: "Auto Release adder"
+
 on:
   pull_request:
     types: [closed]
@@ -15,17 +16,26 @@ jobs:
       - name: Get Release Version
         id: get_release_version
         run: |
-          text="${{ steps.create_release_body.outputs.release_body }}"
+          text="${{ github.event.pull_request.body }}"
           regex="v([0-9]+)\.([0-9]+)\.([0-9]+)"
           if [[ "$text" =~ $regex ]]; then
             echo "version=${BASH_REMATCH[0]}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=NO_VERSION" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Add Release 
+      - name: Add Release
+        if: steps.get_release_version.outputs.version != 'NO_VERSION'
         run: |
-          tag="v1.0.0"
+          tag="${{ steps.get_release_version.outputs.version }}"
           title="$tag"
-          body=$(jq -Rn --arg text "${{ github.event.pull_request.body }}" '$text')
+          raw_body="${{ github.event.pull_request.body }}"
+          # Escape JSON special characters in body (safe string for JSON)
+          escaped_body=$(echo "$raw_body" \
+            | sed 's/\\/\\\\/g' \
+            | sed 's/"/\\"/g' \
+            | sed ':a;N;$!ba;s/\n/\\n/g')
+
           curl -L \
             -X POST \
             -H "Accept: application/vnd.github+json" \
@@ -36,7 +46,7 @@ jobs:
               \"tag_name\": \"$tag\",
               \"target_commitish\": \"production\",
               \"name\": \"$title\",
-              \"body\": \"$body\",
+              \"body\": \"$escaped_body\",
               \"draft\": false,
               \"prerelease\": false,
               \"generate_release_notes\": false
