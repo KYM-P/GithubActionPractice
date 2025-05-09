@@ -19,9 +19,9 @@ jobs:
           text="${{ github.event.pull_request.body }}"
           regex="v([0-9]+)\.([0-9]+)\.([0-9]+)"
           if [[ "$text" =~ $regex ]]; then
-            echo "version=${BASH_REMATCH[0]}" >> "$GITHUB_ENV"
+            echo "version=${BASH_REMATCH[0]}" >> "$GITHUB_OUTPUT"
           else
-            echo "version=NO_VERSION" >> "$GITHUB_ENV"
+            echo "version=NO_VERSION" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Create Release
@@ -30,8 +30,11 @@ jobs:
           tag="${{ steps.get_release_version.outputs.version }}"
           title="$tag"
           body="${{ github.event.pull_request.body }}"
-          modified_body="\nHI\n"
-          echo "Modified Body: $modified_body"
+          if printf "%s" "$body" | grep -q $'\n'; then
+            echo "줄바꿈 문자(개행)가 포함되어 있습니다."
+          else
+            echo "줄바꿈 문자가 없습니다."
+          fi
 
           curl -L \
             -X POST \
@@ -43,7 +46,7 @@ jobs:
               \"tag_name\": \"$tag\",
               \"target_commitish\": \"production\",
               \"name\": \"$title\",
-              \"body\": \"$modified_body\",
+              \"body\": \"$body\",
               \"draft\": false,
               \"prerelease\": false,
               \"generate_release_notes\": false
