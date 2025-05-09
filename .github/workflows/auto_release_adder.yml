@@ -19,10 +19,8 @@ jobs:
       - name: Add Release 
         run: |
           tag="${{ steps.create_release_body.outputs.release_version }}"
-          title="$TAG"
-          bodyData="${{ steps.create_release_body.outputs.release_body }}"
-          echo "$bodyData"
-          body=$(echo "$bodyData" | sed 's/|#@/\\n/g')
+          title="$tag"
+          body="${{ steps.create_release_body.outputs.release_body }}"
           echo "$body"
           curl -L \
             -X POST \
