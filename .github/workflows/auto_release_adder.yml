@@ -29,12 +29,8 @@ jobs:
         run: |
           tag="${{ steps.get_release_version.outputs.version }}"
           title="$tag"
-          raw_body="${{ github.event.pull_request.body }}"
-          # Escape JSON special characters in body (safe string for JSON)
-          escaped_body=$(echo "$raw_body" \
-            | sed 's/\\/\\\\/g' \
-            | sed 's/"/\\"/g' \
-            | sed ':a;N;$!ba;s/\n/\\n/g')
+          body="개
+          행"
 
           curl -L \
             -X POST \
@@ -46,7 +42,7 @@ jobs:
               \"tag_name\": \"$tag\",
               \"target_commitish\": \"production\",
               \"name\": \"$title\",
-              \"body\": \"$escaped_body\",
+              \"body\": \"$body\",
               \"draft\": false,
               \"prerelease\": false,
               \"generate_release_notes\": false
