@@ -1,9 +1,7 @@
 import java.io.File
 
-companion object {
-    const val NO_VERSION_DATA = "NO_VERSION_DATA"
-    const val NO_BODY_DATA = "NO_BODY_DATA"
-}
+val NO_VERSION_DATA = "NO_VERSION_DATA"
+val NO_BODY_DATA = "NO_BODY_DATA"
 
 fun searchReleaseVersion(prBody: String): String {
     val versionRegex = Regex("v\\d+\\.\\d+\\.\\d+")
@@ -23,9 +21,9 @@ fun restoreOutput(releaseVersion: String, releaseBody: String) {
 
 fun main() {
     val prBody = args.firstOrNull() ?: NO_BODY_DATA
-    var releaseVersion = searchReleaseVersion(prBody)
-    var releaseBody = searchReleaseBody(prBody)
-    restoreOutput(prBody)
+    var version = searchReleaseVersion(prBody = prBody)
+    var body = searchReleaseBody(prBody = prBody)
+    restoreOutput(releaseVersion = version, releaseBody = body)
 }
 
 main()
