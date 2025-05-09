@@ -12,15 +12,6 @@ jobs:
       - name: Checkout The PR
         uses: actions/checkout@v4
 
-      - name: Get Release Version
-        id: get_release_version
-        run: |
-          text="${{ steps.create_release_body.outputs.release_body }}"
-          regex="v([0-9]+)\.([0-9]+)\.([0-9]+)"
-          if [[ "$text" =~ $regex ]]; then
-            echo "version=${BASH_REMATCH[0]}" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Add Release 
         run: |
           tag="v1.0.0"
