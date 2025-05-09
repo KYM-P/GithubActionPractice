@@ -31,6 +31,7 @@ jobs:
           title="$tag"
           body="${{ github.event.pull_request.body }}"
           modified_body=$(echo -e "$body" | sed 's/\n/\\n/g')
+          echo "Modified Body: $modified_body"
 
           curl -L \
             -X POST \
