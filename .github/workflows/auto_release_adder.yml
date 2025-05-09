@@ -30,6 +30,7 @@ jobs:
           tag="${{ steps.get_release_version.outputs.version }}"
           title="$tag"
           body="${{ github.event.pull_request.body }}"
+          formatted_body=$(printf "%s" "$body")
 
           curl -L \
             -X POST \
@@ -41,7 +42,7 @@ jobs:
               \"tag_name\": \"$tag\",
               \"target_commitish\": \"production\",
               \"name\": \"$title\",
-              \"body\": \"개\n행\n문\n자\",
+              \"body\": \"$formatted_body\",
               \"draft\": false,
               \"prerelease\": false,
               \"generate_release_notes\": false
