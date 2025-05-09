@@ -17,7 +17,7 @@ jobs:
         run: kotlinc -script .github/scripts/auto_release_adder.kts "${{ github.event.pull_request.body }}"
 
       - name: Create Release
-        if: steps.create_release_body.outputs.release_version != 'NO_VERSION' && steps.create_release_body.outputs.release_body. != 'NO_BODY'
+        if: ${{ steps.create_release_body.outputs.release_version != 'NO_VERSION' && steps.create_release_body.outputs.release_body. != 'NO_BODY' }}
         run: |
           tag="${{ steps.create_release_body.outputs.release_version }}"
           title="$tag"
@@ -40,7 +40,7 @@ jobs:
             }"
 
       - name: Show Fail Log
-        if: steps.create_release_body.outputs.release_version == 'NO_VERSION' || steps.create_release_body.outputs.release_body. == 'NO_BODY'
+        if: ${{ steps.create_release_body.outputs.release_version == 'NO_VERSION' || steps.create_release_body.outputs.release_body. == 'NO_BODY' }}
         run: |
            if [ "${{ steps.create_release_body.outputs.release_version }}" == "NO_VERSION" ]; then
             echo "Fail: Could not found the version code "
