@@ -9,8 +9,8 @@ fun searchReleaseVersion(prBody: String): String {
 }
 
 fun searchReleaseBody(prBody: String): String {
-    var bodyRegex = Regex("# 변경 사항\\s*(.*)")
-    return bodyRegex.find(prBody)?.value?.replace("\n","|#@") ?: NO_BODY_DATA
+    var bodyRegex = Regex("# 변경 사항[\\s\\S]")
+    return bodyRegex.find(prBody)?.value?.replace("\r\n","|#@") ?: NO_BODY_DATA
 }
 
 fun restoreOutput(releaseVersion: String, releaseBody: String) {
