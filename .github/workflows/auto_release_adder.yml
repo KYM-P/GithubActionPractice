@@ -24,12 +24,13 @@ jobs:
             echo "version=NO_VERSION" >> "$GITHUB_ENV"
           fi
 
-      - name: Add Release
+      - name: Create Release
         if: steps.get_release_version.outputs.version != 'NO_VERSION'
         run: |
           tag="${{ steps.get_release_version.outputs.version }}"
           title="$tag"
           body="${{ github.event.pull_request.body }}"
+          modified_body=$(echo -e "$body" | sed 's/\n/\\n/g')
 
           curl -L \
             -X POST \
@@ -41,7 +42,7 @@ jobs:
               \"tag_name\": \"$tag\",
               \"target_commitish\": \"production\",
               \"name\": \"$title\",
-              \"body\": \"${{ github.event.pull_request.body }}\",
+              \"body\": \"$modified_body\",
               \"draft\": false,
               \"prerelease\": false,
               \"generate_release_notes\": false
