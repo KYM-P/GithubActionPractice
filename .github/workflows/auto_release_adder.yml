@@ -22,7 +22,8 @@ jobs:
           tag="${{ steps.create_release_body.outputs.release_version }}"
           title="$tag"
           body="${{ steps.create_release_body.outputs.release_body }}"
-          echo "$body"
+          echo "Version: $tag"
+          echo "Body: $body"
           curl -L \
             -X POST \
             -H "Accept: application/vnd.github+json" \
