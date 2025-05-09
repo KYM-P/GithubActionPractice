@@ -1,17 +1,28 @@
 import java.io.File
 
+const val NO_VERSION_DATA = "NO_VERSION_DATA"
+const val NO_BODY_DATA = "NO_BODY_DATA"
+
 fun searchReleaseVersion(prBody: String): String {
-    var version = ""
-    return version
+    val versionRegex = Regex("v\\d+\\.\\d+\\.\\d+")
+    return versionRegex.find(prBody)?.value ?: NO_VERSION_DATA
 }
 
-fun restoreOutput(releaseBody: String) {
+fun searchReleaseBody(prBody: String): String {
+    var bodyRegex = Regex("# 변경 사항\\s*(.*)")
+    return bodyRegex.find(prBody)?.value ?: NO_BODY_DATA
+}
+
+fun restoreOutput(releaseVersion: String, releaseBody: String) {
     val outputPath = System.getenv("GITHUB_OUTPUT")
+    File(outputPath).appendText("release_version=$releaseVersion")
     File(outputPath).appendText("release_body=$releaseBody")
 }
 
 fun main() {
-    val prBody = args.firstOrNull() ?: "No PR body data"
+    val prBody = args.firstOrNull() ?: NO_BODY_DATA
+    var releaseVersion = searchReleaseVersion(prBody)
+    var releaseBody = searchReleaseBody(prBody)
     restoreOutput(prBody)
 }
 
