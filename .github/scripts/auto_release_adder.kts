@@ -19,8 +19,6 @@ fun restoreOutput(releaseVersion: String, releaseBody: String) {
     File(outputPath).appendText("release_body=$releaseBody\n")
 }
 
-fun
-
 fun main() {
     val prBody = args.firstOrNull() ?: NO_BODY_DATA
     var version = searchReleaseVersion(prBody = prBody)
