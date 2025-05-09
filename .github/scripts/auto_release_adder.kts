@@ -19,11 +19,19 @@ fun restoreOutput(releaseVersion: String, releaseBody: String) {
     File(outputPath).appendText("release_body=$releaseBody\n")
 }
 
+fun stringTest(string: String): String {
+    var result = ""
+    string.forEach { char ->
+        result += char.toInt().toString() + " "
+    }
+    return result
+}
+
 fun main() {
     val prBody = args.firstOrNull() ?: NO_BODY_DATA
     var version = searchReleaseVersion(prBody = prBody)
     var body = searchReleaseBody(prBody = prBody)
-    restoreOutput(releaseVersion = version, releaseBody = body)
+    restoreOutput(releaseVersion = version, releaseBody = stringTest(body))
 }
 
 main()
