@@ -22,7 +22,7 @@ jobs:
           title="$TAG"
           bodyData="${{ steps.create_release_body.outputs.release_body }}"
           echo "$bodyData"
-          body=$(echo -e "$bodyData" | sed 's/|#@/\n/g')
+          body=$(echo "$bodyData" | sed 's/|#@/\\n/g')
           echo "$body"
           curl -L \
             -X POST \
