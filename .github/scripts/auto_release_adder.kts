@@ -1,7 +1,7 @@
 import java.io.File
 
-val NO_VERSION_DATA = "NO_VERSION_DATA"
-val NO_BODY_DATA = "NO_BODY_DATA"
+val NO_VERSION_DATA = "NO_VERSION"
+val NO_BODY_DATA = "NO_BODY"
 
 fun searchReleaseVersion(prBody: String): String {
     val versionRegex = Regex("v\\d+\\.\\d+\\.\\d+")
@@ -17,14 +17,6 @@ fun restoreOutput(releaseVersion: String, releaseBody: String) {
     val outputPath = System.getenv("GITHUB_OUTPUT")
     File(outputPath).appendText("release_version=${releaseVersion}\n")
     File(outputPath).appendText("release_body=${releaseBody}\n")
-}
-
-fun stringTest(string: String): String {
-    var result = ""
-    string.forEach { char ->
-        result += char.toInt().toString() + " "
-    }
-    return result
 }
 
 fun main() {
