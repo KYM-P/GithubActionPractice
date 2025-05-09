@@ -41,8 +41,7 @@ jobs:
               \"tag_name\": \"$tag\",
               \"target_commitish\": \"production\",
               \"name\": \"$title\",
-              \"body\": \"개
-행\",
+              \"body\": \"$(echo "$body" | jq -Rs .)\",
               \"draft\": false,
               \"prerelease\": false,
               \"generate_release_notes\": false
