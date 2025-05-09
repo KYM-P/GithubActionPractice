@@ -30,7 +30,7 @@ jobs:
           tag="${{ steps.get_release_version.outputs.version }}"
           title="$tag"
           body="${{ github.event.pull_request.body }}"
-          modified_body=$(printf "%s" "$body" | tr '\n' '|')
+          modified_body=$(printf "%s" "$body" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')
           echo "Modified Body: $modified_body"
 
           curl -L \
