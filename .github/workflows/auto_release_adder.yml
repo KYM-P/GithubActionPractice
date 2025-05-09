@@ -12,11 +12,20 @@ jobs:
       - name: Checkout The PR
         uses: actions/checkout@v4
 
+      - name: Get Release Version
+        id: get_release_version
+        run: |
+          text="${{ steps.create_release_body.outputs.release_body }}"
+          regex="v([0-9]+)\.([0-9]+)\.([0-9]+)"
+          if [[ "$text" =~ $regex ]]; then
+            echo "version=${BASH_REMATCH[0]}" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Add Release 
         run: |
           tag="v1.0.0"
           title="$tag"
-          body="${{ github.event.pull_request.body }}"
+          body=$(jq -Rn --arg text "${{ github.event.pull_request.body }}" '$text')
           curl -L \
             -X POST \
             -H "Accept: application/vnd.github+json" \
