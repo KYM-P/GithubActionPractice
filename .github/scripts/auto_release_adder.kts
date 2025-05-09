@@ -31,7 +31,7 @@ fun main() {
     val prBody = args.firstOrNull() ?: NO_BODY_DATA
     var version = searchReleaseVersion(prBody = prBody)
     var body = searchReleaseBody(prBody = prBody)
-    restoreOutput(releaseVersion = version, releaseBody = stringTest(body))
+    restoreOutput(releaseVersion = version, releaseBody = body)
 }
 
 main()
