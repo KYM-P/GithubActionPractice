@@ -10,7 +10,7 @@ fun searchReleaseVersion(prBody: String): String {
 
 fun searchReleaseBody(prBody: String): String {
     var bodyRegex = Regex("# 변경 사항\\s*(.*)")
-    return bodyRegex.find(prBody)?.value ?: NO_BODY_DATA
+    return bodyRegex.find(prBody)?.value.replace("\n","|#@") ?: NO_BODY_DATA
 }
 
 fun restoreOutput(releaseVersion: String, releaseBody: String) {
@@ -19,12 +19,12 @@ fun restoreOutput(releaseVersion: String, releaseBody: String) {
     File(outputPath).appendText("release_body=$releaseBody\n")
 }
 
+fun
+
 fun main() {
     val prBody = args.firstOrNull() ?: NO_BODY_DATA
-    //var version = searchReleaseVersion(prBody = prBody)
-    var version = "v1.0.0"
-    //var body = searchReleaseBody(prBody = prBody)
-    var body = prBody
+    var version = searchReleaseVersion(prBody = prBody)
+    var body = searchReleaseBody(prBody = prBody)
     restoreOutput(releaseVersion = version, releaseBody = body)
 }
 
