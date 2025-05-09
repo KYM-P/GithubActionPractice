@@ -41,7 +41,8 @@ jobs:
               \"tag_name\": \"$tag\",
               \"target_commitish\": \"production\",
               \"name\": \"$title\",
-              \"body\": \"$(printf "%s" "$body")\",
+              \"body\": \"개
+행\",
               \"draft\": false,
               \"prerelease\": false,
               \"generate_release_notes\": false
