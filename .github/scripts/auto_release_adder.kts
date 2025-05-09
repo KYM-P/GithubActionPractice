@@ -9,7 +9,7 @@ fun searchReleaseVersion(prBody: String): String {
 }
 
 fun searchReleaseBody(prBody: String): String {
-    var bodyRegex = Regex("# 변경 사항[\\s\\S]")
+    var bodyRegex = Regex("# 변경 사항[\\\\s\\\\S]")
     return bodyRegex.find(prBody)?.value?.replace("\r\n","|#@") ?: NO_BODY_DATA
 }
 
