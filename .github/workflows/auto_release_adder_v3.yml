@@ -53,6 +53,7 @@ jobs:
             --jq -r '.[] | "- " + .title + " #" + (.number|tostring) + " @" + .author.login' | tr '\n' '\\n')
           if [ -n "$FEATURE_PR" ]; then
             BODY="$BODY$FEATURE_TITLE$FEATURE_PR"
+          fi
 
           BUG_TITLE="### Bug \\n"
           BUG_PR=$(gh pr list \
@@ -64,6 +65,7 @@ jobs:
             --jq -r '.[] | "- " + .title + " #" + (.number|tostring) + " @" + .author.login' | tr '\n' '\\n')
           if [ -n "$BUG_PR" ]; then
             BODY="$BODY$BUG_TITLE$BUG_PR"
+          fi
          
           CHORE_TITLE="### Chore \\n"
           CHORE_PR=$(gh pr list \
@@ -75,6 +77,7 @@ jobs:
             --jq -r '.[] | "- " + .title + " #" + (.number|tostring) + " @" + .author.login' | tr '\n' '\\n')
           if [ -n "$CHORE_PR" ]; then
             BODY="$BODY$CHORE_TITLE$CHORE_PR"
+          fi
           
           echo "campus_body=$BODY\n" >> $GITHUB_OUTPUT
 
