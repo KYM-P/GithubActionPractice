@@ -34,7 +34,7 @@ jobs:
       - name: Get Commit Date of Latest Tag
         id: tag_date
         run: |
-          RELEASE_DATE=$(gh release view v1.1.10 --json createdAt --jq .createdAt)
+          RELEASE_DATE=$(gh release view "$LATEST_TAG" --json createdAt --jq .createdAt)
           echo "RELEASE_DATE=$RELEASE_DATE" >> $GITHUB_ENV
 
       - name: Create body
@@ -43,8 +43,8 @@ jobs:
           BODY=""
 
           CAMPUS_TITLE="## Campus \\n"
-          BUSINESS_TITLE="## Campus \\n"
-          USER_TITLE="## Campus \\n"
+          BUSINESS_TITLE="## Business \\n"
+          USER_TITLE="## User \\n"
 
           CAMPUS_TAG="campus"
           BUSINESS_TAG="business"
@@ -61,13 +61,17 @@ jobs:
           fetch_prs() {
             local tag_1=$1
             local tag_2=$2
+            local title=$3
             local searched_prs=$(gh pr list \
               --state merged \
               --label "$tag_1" \
               --label "$tag_2" \
               --search "merged:>${{ env.RELEASE_DATE }}" \
-              --json number,title,author \
-              --jq '[.[] | "- " + .title + " #" + (.number|tostring) + " @" + .author.login] | join("\\n")')
+              --json number,title,author,labels \
+              --jq '[.[] | select((.labels | map(.name) | index("'"$tag_1"'")) and (.labels | map(.name) | index("'"$tag_2"'"))) | "- " + .title + " #" + (.number|tostring) + " @" + .author.login] | join("\\n")')
+            if [ -n "$searched_prs" ]; then
+              searched_prs="$title$searched_prs\\n"
+            fi
             echo "$searched_prs"
           }
 
