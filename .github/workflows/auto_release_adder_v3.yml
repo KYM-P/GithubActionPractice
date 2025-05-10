@@ -68,7 +68,7 @@ jobs:
               --label "$tag_2" \
               --search "merged:>${{ env.RELEASE_DATE }}" \
               --json number,title,author \
-              --jq '[.[] | "- " + .title + " #" + (.number|tostring) + " @" + .author.login] | join("\\n")')
+              --jq '[.[] | select((.labels | map(.name) | index("'"$tag_1"'")) and (.labels | map(.name) | index("'"$tag_2"'"))) | "- " + .title + " #" + (.number|tostring) + " @" + .author.login] | join("\\n")')
             if [ -n "$searched_prs" ]; then
               searched_prs="$title$searched_prs\\n"
             fi
