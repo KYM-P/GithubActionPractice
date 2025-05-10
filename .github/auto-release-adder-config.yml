@@ -1,5 +1,5 @@
-name-template: '$VERSION'
-tag-template: '$VERSION'
+name-template: 'DRAFT'
+tag-template: 'DRAFT'
 categories:
   - title: '새로운 기능 추가'
     label: 'feature'
@@ -15,5 +15,4 @@ categories:
 change-template: '- $TITLE #$NUMBER @$AUTHOR '
 template: |
   ## 총 변경사항
-  ---
   $CHANGES

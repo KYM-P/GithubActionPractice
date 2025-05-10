@@ -1,0 +1,101 @@
+name: "Auto Release Adder"
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - production
+jobs:
+  auto_release_adder:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout The PR
+        uses: actions/checkout@v4
+
+      - name: Get Version From PR
+        id: get_version
+        run: kotlinc -script .github/scripts/auto_release_adder.kts "${{ github.event.pull_request.body }}"
+
+      - name: Show Fail Log
+        if: ${{ steps.create_release_body.outputs.release_version == 'NO_VERSION' }}
+        run: |
+           if [ "${{ steps.create_release_body.outputs.release_version }}" == "NO_VERSION" ]; then
+            echo "Fail: Could not found the version code "
+           fi
+           exit 1
+     
+      - name: Authenticate GitHub CLI
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+
+      - name: Get Latest Release Tag
+        id: latest_tag
+        run: |
+          TAG=$(gh release list --limit 1 --json tagName --jq '.[0].tagName')
+          echo "LATEST_TAG=$TAG" >> $GITHUB_ENV
+      
+      - name: Get Commit Date of Latest Tag
+        id: tag_date
+        run: |
+          COMMIT_DATE=$(git log -1 --format=%cI ${{ env.LATEST_TAG }})
+          echo "COMMIT_DATE=$COMMIT_DATE" >> $GITHUB_ENV
+
+      - name: Create Campus Part body
+        id: create_campus_part_body
+        run: |
+          BODY="## Campus \\n"
+          FEATURE_TITLE="### Feature \\n"
+          FEATURE_PR=$(gh pr list \
+            --state merged \
+            --label "campus" \
+            --label "feature" \
+            --search "merged:>${{ env.COMMIT_DATE }}" \
+            --json number,title,author \
+            --jq -r '.[] | "- " + .title + " #" + (.number|tostring) + " @" + .author.login' | tr '\n' '\\n')
+          if [ -n "$FEATURE_PR" ]; then
+            BODY="$BODY$FEATURE_TITLE$FEATURE_PR"
+
+          BUG_TITLE="### Bug \\n"
+          BUG_PR=$(gh pr list \
+            --state merged \
+            --label "campus" \
+            --label "bug" \
+            --search "merged:>${{ env.COMMIT_DATE }}" \
+            --json number,title,author \
+            --jq -r '.[] | "- " + .title + " #" + (.number|tostring) + " @" + .author.login' | tr '\n' '\\n')
+          if [ -n "$BUG_PR" ]; then
+            BODY="$BODY$BUG_TITLE$BUG_PR"
+         
+          CHORE_TITLE="### Chore \\n"
+          CHORE_PR=$(gh pr list \
+            --state merged \
+            --label "campus" \
+            --label "bug" \
+            --search "merged:>${{ env.COMMIT_DATE }}" \
+            --json number,title,author \
+            --jq -r '.[] | "- " + .title + " #" + (.number|tostring) + " @" + .author.login' | tr '\n' '\\n')
+          if [ -n "$CHORE_PR" ]; then
+            BODY="$BODY$CHORE_TITLE$CHORE_PR"
+          
+          echo "campus_body=$BODY\n" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        run: |
+          tag="${{ steps.get_version.outputs.release_version }}"
+          title="$tag"
+          body="${{ steps.create_campus_part_body.outputs.campus_body }}"
+          echo "Version: $tag"
+          echo "Body: $body"
+          curl -L \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/${{ github.repository }}/releases \
+            -d "{
+              \"tag_name\": \"$tag\",
+              \"target_commitish\": \"production\",
+              \"name\": \"$title\",
+              \"body\": \"$body\",
+              \"draft\": false,
+              \"prerelease\": false,
+              \"generate_release_notes\": false
+            }"
