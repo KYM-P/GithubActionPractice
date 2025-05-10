@@ -48,7 +48,7 @@ jobs:
             --label "$UNIT_TAG" \
             --search "merged:>${{ env.RELEASE_DATE }}" \
             --json number,title,author \
-            --jq '[.[] | select(.labels | map(.name) | inside(["'"$UNIT_TAG"'", "feature"]) | length == 2) | "- " + .title + " #" + (.number|tostring) + " @" + .author.login]' | tr '\n' '\\n')
+            --jq '[.[] | "- " + .title + " #" + (.number|tostring) + " @" + .author.login]' | tr '\n' '\\n')
           if [ -n "$FEATURE_PR" ]; then
             BODY="$BODY$FEATURE_TITLE$FEATURE_PR"
           fi
@@ -59,7 +59,7 @@ jobs:
             --label "$UNIT_TAG" \
             --search "merged:>${{ env.RELEASE_DATE }}" \
             --json number,title,author \
-            --jq '[.[] | select(.labels | map(.name) | inside(["'"$UNIT_TAG"'", "feature"]) | length == 2) | "- " + .title + " #" + (.number|tostring) + " @" + .author.login]' | tr '\n' '\\n')
+            --jq '[.[] | select(.labels | map(.name) | inside(["'"$UNIT_TAG"'", "bug"]) | length == 2) | "- " + .title + " #" + (.number|tostring) + " @" + .author.login]' | tr '\n' '\\n')
 
           if [ -n "$BUG_PR" ]; then
             BODY="$BODY$BUG_TITLE$BUG_PR"
@@ -71,7 +71,7 @@ jobs:
             --label "$UNIT_TAG" \
             --search "merged:>${{ env.RELEASE_DATE }}" \
             --json number,title,author \
-            --jq '[.[] | select(.labels | map(.name) | inside(["'"$UNIT_TAG"'", "feature"]) | length == 2) | "- " + .title + " #" + (.number|tostring) + " @" + .author.login]' | tr '\n' '\\n')
+            --jq '[.[] | select(.labels | map(.name) | inside(["'"$UNIT_TAG"'", "chore"]) | length == 2) | "- " + .title + " #" + (.number|tostring) + " @" + .author.login]' | tr '\n' '\\n')
           if [ -n "$CHORE_PR" ]; then
             BODY="$BODY$CHORE_TITLE$CHORE_PR"
           fi
