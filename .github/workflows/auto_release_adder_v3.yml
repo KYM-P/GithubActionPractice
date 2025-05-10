@@ -56,10 +56,10 @@ jobs:
           KOIN_PROJECT_TAG="koin project"
           
           # 작업별 TITLE (작성용)
-          FEATURE_TITLE="### Feature \\n"
-          BUG_TITLE="### Bug \\n"
-          REFECTOR_TITLE="### Refactor \\n"
-          CHORE_TITLE="### Chore \\n"
+          FEATURE_TITLE="### 신규 기능 개발 \\n"
+          BUG_TITLE="### 버그 수정 \\n"
+          REFECTOR_TITLE="### 리팩토링 \\n"
+          CHORE_TITLE="### 자잘한 작업 \\n"
           
           # 작업별 TAG (감지용)
           FEATURE_TAG="feature"
