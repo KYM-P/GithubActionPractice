@@ -28,6 +28,8 @@ jobs:
         run: |
           TAG=$(gh release list --limit 1 --json tagName --jq '.[0].tagName')
           echo "LATEST_TAG=$TAG" >> $GITHUB_ENV
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Get Commit Date of Latest Tag
         id: tag_date
