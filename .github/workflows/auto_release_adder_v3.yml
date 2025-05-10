@@ -54,7 +54,7 @@ jobs:
 
           FEATURE_TAG="feature"
           BUG_TAG="bug"
-          REFECTOR="refactor"
+          REFECTOR_TAG="refactor"
           CHORE_TAG="chore"
 
           FEATURE_TITLE="### Feature \\n"
@@ -82,7 +82,7 @@ jobs:
           add_team_body() {
             local team_tag=$1
             local team_title=$2
-            local team_body="$(fetch_prs "$team_tag" "$FEATRURE_TAG" "$FEATURE_TITLE")$(fetch_prs "$team_tag" "$BUG_TAG" "$BUG_TITLE")$(fetch_prs "$team_tag" "$REFECTOR_TAG" "$REFECTOR_TITLE")$(fetch_prs "$team_tag" "$CHORE_TAG" "$CHORE_TITLE")"
+            local team_body="$(fetch_prs "$team_tag" "$FEATURE_TAG" "$FEATURE_TITLE")$(fetch_prs "$team_tag" "$BUG_TAG" "$BUG_TITLE")$(fetch_prs "$team_tag" "$REFECTOR_TAG" "$REFECTOR_TITLE")$(fetch_prs "$team_tag" "$CHORE_TAG" "$CHORE_TITLE")"
             if [ -n "$team_body" ]; then
               BODY="$BODY$team_title$team_body\\n"
             fi
