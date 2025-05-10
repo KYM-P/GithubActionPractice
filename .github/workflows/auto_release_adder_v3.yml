@@ -35,7 +35,7 @@ jobs:
           RELEASE_DATE=$(gh release view v1.1.10 --json createdAt --jq .createdAt)
           echo "RELEASE_DATE=$RELEASE_DATE" >> $GITHUB_ENV
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Campus Part body
         id: create_campus_part_body
