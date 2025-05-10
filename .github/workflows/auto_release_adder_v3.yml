@@ -48,7 +48,7 @@ jobs:
             --label "$UNIT_TAG" \
             --search "merged:>${{ env.RELEASE_DATE }}" \
             --json number,title,author \
-            --jq '[.[] | "- " + .title + " #" + (.number|tostring) + " @" + .author.login]' | tr '\n' '\\n')
+            --jq '[.[] | "- " + .title + " #" + (.number|tostring) + " @" + .author.login] | join("\\n")')
           if [ -n "$FEATURE_PR" ]; then
             BODY="$BODY$FEATURE_TITLE$FEATURE_PR"
           fi
