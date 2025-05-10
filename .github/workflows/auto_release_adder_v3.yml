@@ -43,14 +43,14 @@ jobs:
         id: create_campus_part_body
         run: |
           BODY="## Campus \\n"
+          UNIT_TAG="campus"
           FEATURE_TITLE="### Feature \\n"
           FEATURE_PR=$(gh pr list \
             --state merged \
-            --label "campus" \
-            --label "feature" \
+            --label "$UNIT_TAG" \
             --search "merged:>${{ env.RELEASE_DATE }}" \
             --json number,title,author \
-            --jq -r '.[] | "- " + .title + " #" + (.number|tostring) + " @" + .author.login' | tr '\n' '\\n')
+            --jq '[.[] | select(.labels | map(.name) | inside(["'"$UNIT_TAG"'", "feature"]) | length == 2) | "- " + .title + " #" + (.number|tostring) + " @" + .author.login]' | tr '\n' '\\n')
           if [ -n "$FEATURE_PR" ]; then
             BODY="$BODY$FEATURE_TITLE$FEATURE_PR"
           fi
@@ -58,11 +58,11 @@ jobs:
           BUG_TITLE="### Bug \\n"
           BUG_PR=$(gh pr list \
             --state merged \
-            --label "campus" \
-            --label "bug" \
+            --label "$UNIT_TAG" \
             --search "merged:>${{ env.RELEASE_DATE }}" \
             --json number,title,author \
-            --jq -r '.[] | "- " + .title + " #" + (.number|tostring) + " @" + .author.login' | tr '\n' '\\n')
+            --jq '[.[] | select(.labels | map(.name) | inside(["'"$UNIT_TAG"'", "feature"]) | length == 2) | "- " + .title + " #" + (.number|tostring) + " @" + .author.login]' | tr '\n' '\\n')
+
           if [ -n "$BUG_PR" ]; then
             BODY="$BODY$BUG_TITLE$BUG_PR"
           fi
@@ -70,11 +70,10 @@ jobs:
           CHORE_TITLE="### Chore \\n"
           CHORE_PR=$(gh pr list \
             --state merged \
-            --label "campus" \
-            --label "bug" \
+            --label "$UNIT_TAG" \
             --search "merged:>${{ env.RELEASE_DATE }}" \
             --json number,title,author \
-            --jq -r '.[] | "- " + .title + " #" + (.number|tostring) + " @" + .author.login' | tr '\n' '\\n')
+            --jq '[.[] | select(.labels | map(.name) | inside(["'"$UNIT_TAG"'", "feature"]) | length == 2) | "- " + .title + " #" + (.number|tostring) + " @" + .author.login]' | tr '\n' '\\n')
           if [ -n "$CHORE_PR" ]; then
             BODY="$BODY$CHORE_TITLE$CHORE_PR"
           fi
