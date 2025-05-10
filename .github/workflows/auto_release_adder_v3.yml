@@ -34,7 +34,7 @@ jobs:
       - name: Get Commit Date of Latest Tag
         id: tag_date
         run: |
-          RELEASE_DATE=$(gh release view v1.1.10 --json createdAt --jq .createdAt)
+          RELEASE_DATE=$(gh release view "$LATEST_TAG" --json createdAt --jq .createdAt)
           echo "RELEASE_DATE=$RELEASE_DATE" >> $GITHUB_ENV
 
       - name: Create body
