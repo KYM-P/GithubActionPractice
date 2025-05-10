@@ -69,10 +69,10 @@ jobs:
               --search "merged:>${{ env.RELEASE_DATE }}" \
               --json number,title,author \
               --jq '[.[] | "- " + .title + " #" + (.number|tostring) + " @" + .author.login] | join("\\n")')
-            echo "$searched_prs"
             if [ -n "$searched_prs" ]; then
-              BODY="$BODY$title$searched_prs\\n"
+              searched_prs="$title$searched_prs\\n"
             fi
+            echo "$searched_prs"
           }
 
           add_team_body() {
