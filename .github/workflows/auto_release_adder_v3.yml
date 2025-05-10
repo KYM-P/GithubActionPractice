@@ -45,17 +45,21 @@ jobs:
           CAMPUS_TITLE="## Campus \\n"
           BUSINESS_TITLE="## Business \\n"
           USER_TITLE="## User \\n"
+          KOIN_PROJECT_TITLE="## Koin Project 전반 \\n"
 
           CAMPUS_TAG="campus"
           BUSINESS_TAG="business"
           USER_TAG="user"
+          KOIN_PROJECT_TAG="koin project"
 
           FEATURE_TAG="feature"
           BUG_TAG="bug"
+          REFECTOR="refactor"
           CHORE_TAG="chore"
 
           FEATURE_TITLE="### Feature \\n"
           BUG_TITLE="### Bug \\n"
+          REFECTOR_TITLE="### Refactor \\n"
           CHORE_TITLE="### Chore \\n"
 
           fetch_prs() {
@@ -78,7 +82,7 @@ jobs:
           add_team_body() {
             local team_tag=$1
             local team_title=$2
-            local team_body="$(fetch_prs "$team_tag" "$FEATRURE_TAG" "$FEATURE_TITLE")$(fetch_prs "$team_tag" "$BUG_TAG" "$BUG_TITLE")$(fetch_prs "$team_tag" "$CHORE_TAG" "$CHORE_TITLE")"
+            local team_body="$(fetch_prs "$team_tag" "$FEATRURE_TAG" "$FEATURE_TITLE")$(fetch_prs "$team_tag" "$BUG_TAG" "$BUG_TITLE")$(fetch_prs "$team_tag" "$REFECTOR_TAG" "$REFECTOR_TITLE")$(fetch_prs "$team_tag" "$CHORE_TAG" "$CHORE_TITLE")"
             if [ -n "$team_body" ]; then
               BODY="$BODY$team_title$team_body\\n"
             fi
@@ -89,6 +93,8 @@ jobs:
           add_team_body "$BUSINESS_TAG" "$BUSINESS_TITLE"
 
           add_team_body "$USER_TAG" "$USER_TITLE"
+
+          add_team_body "$KOIN_PROJECT_TAG" "$KOIN_PROJECT_TITLE"
           
           echo "body=$BODY\n" >> $GITHUB_OUTPUT
 
