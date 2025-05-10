@@ -43,8 +43,8 @@ jobs:
           BODY=""
 
           CAMPUS_TITLE="## Campus \\n"
-          BUSINESS_TITLE="## Campus \\n"
-          USER_TITLE="## Campus \\n"
+          BUSINESS_TITLE="## Business \\n"
+          USER_TITLE="## User \\n"
 
           CAMPUS_TAG="campus"
           BUSINESS_TAG="business"
@@ -61,6 +61,7 @@ jobs:
           fetch_prs() {
             local tag_1=$1
             local tag_2=$2
+            local title=$3
             local searched_prs=$(gh pr list \
               --state merged \
               --label "$tag_1" \
@@ -69,6 +70,9 @@ jobs:
               --json number,title,author \
               --jq '[.[] | "- " + .title + " #" + (.number|tostring) + " @" + .author.login] | join("\\n")')
             echo "$searched_prs"
+            if [ -n "$searched_prs" ]; then
+              BODY="$BODY$title$searched_prs\\n"
+            fi
           }
 
           add_team_body() {
