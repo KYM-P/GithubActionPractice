@@ -1,0 +1,18 @@
+name-template: 'DRAFT'
+tag-template: 'DRAFT'
+categories:
+  - title: '새로운 기능 추가'
+    label: 'feature'
+  - title: '버그 수정'
+    label: 'bug'
+  - title: '코드 개선'
+    label:
+      - 'refactor'
+  - title: '그 외'
+    label:
+      - 'chore'
+
+change-template: '- $TITLE #$NUMBER @$AUTHOR '
+template: |
+  ## 총 변경사항
+  $CHANGES

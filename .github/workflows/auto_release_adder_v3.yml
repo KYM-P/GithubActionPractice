@@ -1,0 +1,112 @@
+name: "Auto Release Adder"
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - production
+jobs:
+  auto_release_adder:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout The PR
+        uses: actions/checkout@v4
+
+      - name: Get Version From PR
+        id: get_version
+        run: kotlinc -script .github/scripts/auto_release_adder.kts "${{ github.event.pull_request.body }}"
+
+      - name: Show Fail Log
+        if: ${{ steps.create_release_body.outputs.release_version == 'NO_VERSION' }}
+        run: |
+           if [ "${{ steps.create_release_body.outputs.release_version }}" == "NO_VERSION" ]; then
+            echo "Fail: Could not found the version code "
+           fi
+           exit 1
+      - name: Authenticate GitHub CLI
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+
+      - name: Get Latest Release Tag
+        id: latest_tag
+        run: |
+          TAG=$(gh release list --limit 1 --json tagName --jq '.[0].tagName')
+          echo "LATEST_TAG=$TAG" >> $GITHUB_ENV
+      
+      - name: Get Commit Date of Latest Tag
+        id: tag_date
+        run: |
+          RELEASE_DATE=$(gh release view v1.1.10 --json createdAt --jq .createdAt)
+          echo "RELEASE_DATE=$RELEASE_DATE" >> $GITHUB_ENV
+
+      - name: Create body
+        id: create_body
+        run: |
+          BODY=""
+
+          CAMPUS_TITLE="## Campus \\n"
+          BUSINESS_TITLE="## Campus \\n"
+          USER_TITLE="## Campus \\n"
+
+          CAMPUS_TAG="campus"
+          BUSINESS_TAG="business"
+          USER_TAG="user"
+
+          FEATURE_TAG="feature"
+          BUG_TAG="bug"
+          CHORE_TAG="chore"
+
+          FEATURE_TITLE="### Feature \\n"
+          BUG_TITLE="### Bug \\n"
+          CHORE_TITLE="### Chore \\n"
+
+          fetch_prs() {
+            local tag_1=$1
+            local tag_2=$2
+            local searched_prs=$(gh pr list \
+              --state merged \
+              --label "$tag_1" \
+              --label "$tag_2" \
+              --search "merged:>${{ env.RELEASE_DATE }}" \
+              --json number,title,author \
+              --jq '[.[] | "- " + .title + " #" + (.number|tostring) + " @" + .author.login] | join("\\n")')
+            echo "$searched_prs"
+          }
+
+          add_team_body() {
+            local team_tag=$1
+            local team_title=$2
+            local team_body="$(fetch_prs "$team_tag" "$FEATRURE_TAG" "$FEATURE_TITLE")$(fetch_prs "$team_tag" "$BUG_TAG" "$BUG_TITLE")$(fetch_prs "$team_tag" "$CHORE_TAG" "$CHORE_TITLE")"
+            if [ -n "$team_body" ]; then
+              BODY="$BODY$team_title$team_body\\n"
+            fi
+          }
+
+          add_team_body "$CAMPUS_TAG" "$CAMPUS_TITLE"
+          
+          add_team_body "$BUSINESS_TAG" "$BUSINESS_TITLE"
+
+          add_team_body "$USER_TAG" "$USER_TITLE"
+          
+          echo "body=$BODY\n" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        run: |
+          tag="${{ steps.get_version.outputs.release_version }}"
+          title="$tag"
+          body="${{ steps.create_body.outputs.body }}"
+          echo "Version: $tag"
+          echo "Body: $body"
+          curl -L \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/${{ github.repository }}/releases \
+            -d "{
+              \"tag_name\": \"$tag\",
+              \"target_commitish\": \"production\",
+              \"name\": \"$title\",
+              \"body\": \"$body\",
+              \"draft\": false,
+              \"prerelease\": false,
+              \"generate_release_notes\": false
+            }"
