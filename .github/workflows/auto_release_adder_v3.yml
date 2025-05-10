@@ -37,52 +37,62 @@ jobs:
           RELEASE_DATE=$(gh release view v1.1.10 --json createdAt --jq .createdAt)
           echo "RELEASE_DATE=$RELEASE_DATE" >> $GITHUB_ENV
 
-      - name: Create Campus Part body
-        id: create_campus_part_body
+      - name: Create body
+        id: create_body
         run: |
-          BODY="## Campus \\n"
-          UNIT_TAG="campus"
+          BODY=""
+
+          CAMPUS_TITLE="## Campus \\n"
+          BUSINESS_TITLE="## Campus \\n"
+          USER_TITLE="## Campus \\n"
+
+          CAMPUS_TAG="campus"
+          BUSINESS_TAG="business"
+          USER_TAG="user"
+
+          FEATURE_TAG="feature"
+          BUG_TAG="bug"
+          CHORE_TAG="chore"
+
           FEATURE_TITLE="### Feature \\n"
-          FEATURE_PR=$(gh pr list \
-            --state merged \
-            --label "$UNIT_TAG" \
-            --search "merged:>${{ env.RELEASE_DATE }}" \
-            --json number,title,author \
-            --jq '[.[] | "- " + .title + " #" + (.number|tostring) + " @" + .author.login] | join("\\n")')
-          if [ -n "$FEATURE_PR" ]; then
-            BODY="$BODY$FEATURE_TITLE$FEATURE_PR"
-          fi
-
           BUG_TITLE="### Bug \\n"
-          BUG_PR=$(gh pr list \
-            --state merged \
-            --label "$UNIT_TAG" \
-            --search "merged:>${{ env.RELEASE_DATE }}" \
-            --json number,title,author \
-            --jq '[.[] | select(.labels | map(.name) | inside(["'"$UNIT_TAG"'", "bug"]) | length == 2) | "- " + .title + " #" + (.number|tostring) + " @" + .author.login]' | tr '\n' '\\n')
-
-          if [ -n "$BUG_PR" ]; then
-            BODY="$BODY$BUG_TITLE$BUG_PR"
-          fi
-         
           CHORE_TITLE="### Chore \\n"
-          CHORE_PR=$(gh pr list \
-            --state merged \
-            --label "$UNIT_TAG" \
-            --search "merged:>${{ env.RELEASE_DATE }}" \
-            --json number,title,author \
-            --jq '[.[] | select(.labels | map(.name) | inside(["'"$UNIT_TAG"'", "chore"]) | length == 2) | "- " + .title + " #" + (.number|tostring) + " @" + .author.login]' | tr '\n' '\\n')
-          if [ -n "$CHORE_PR" ]; then
-            BODY="$BODY$CHORE_TITLE$CHORE_PR"
-          fi
+
+          fetch_prs() {
+            local tag_1=$1
+            local tag_2=$2
+            local searched_prs=$(gh pr list \
+              --state merged \
+              --label "$tag_1" \
+              --label "$tag_2" \
+              --search "merged:>${{ env.RELEASE_DATE }}" \
+              --json number,title,author \
+              --jq '[.[] | "- " + .title + " #" + (.number|tostring) + " @" + .author.login] | join("\\n")')
+            echo "$searched_prs"
+          }
+
+          add_team_body() {
+            local team_tag=$1
+            local team_title=$2
+            local team_body="$(fetch_prs "$team_tag" "$FEATRURE_TAG" "$FEATURE_TITLE")$(fetch_prs "$team_tag" "$BUG_TAG" "$BUG_TITLE")$(fetch_prs "$team_tag" "$CHORE_TAG" "$CHORE_TITLE")"
+            if [ -n "$team_body" ]; then
+              BODY="$BODY$team_title$team_body\\n"
+            fi
+          }
+
+          add_team_body "$CAMPUS_TAG" "$CAMPUS_TITLE"
           
-          echo "campus_body=$BODY\n" >> $GITHUB_OUTPUT
+          add_team_body "$BUSINESS_TAG" "$BUSINESS_TITLE"
+
+          add_team_body "$USER_TAG" "$USER_TITLE"
+          
+          echo "body=$BODY\n" >> $GITHUB_OUTPUT
 
       - name: Create Release
         run: |
           tag="${{ steps.get_version.outputs.release_version }}"
           title="$tag"
-          body="${{ steps.create_campus_part_body.outputs.campus_body }}"
+          body="${{ steps.create_body.outputs.body }}"
           echo "Version: $tag"
           echo "Body: $body"
           curl -L \
