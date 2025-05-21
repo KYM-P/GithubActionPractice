@@ -85,13 +85,28 @@ jobs:
 
           # Team 검사, 결과 저장
           TEAM_RESULT=$(team_check "$PR_TITLE")
-          echo "team=$TEAM_RESULT\n" >> $GITHUB_OUTPUT
+          echo "team=$TEAM_RESULT" >> $GITHUB_OUTPUT
 
           # 작업 검사, 결과 저장
           JOB_RESULT=$(job_check "$PR_TITLE")
-          echo "job=$JOB_RESULT\n" >> $GITHUB_OUTPUT
+          echo "job=$JOB_RESULT" >> $GITHUB_OUTPUT
 
-      - name: Add label
+      - name: Check Error
+        run: |
+          NO_VALUE="no value"
+          TEAM_LABEL="${{ steps.check_need_label.outputs.team }}"
+          if [[ "$TEAM_LABEL" == "$NO_VALUE" ]]; then
+            echo "No Team code like [Campus]\n"
+          fi
+          JOB_LABEL="${{ steps.check_need_label.outputs.job }}"
+          if [[ "$JOB_LABEL" == "$NO_VALUE" ]]; then
+            echo "No JOB code like [fix]\n"
+          fi
+          if [[ "$TEAM_LABEL" == "$NO_VALUE" || "$JOB_LABEL" == "$NO_VALUE" ]]; then
+            exit 1
+          fi
+
+      - name: Add Label
         uses: actions/github-script@v7
         with:
           script: |
