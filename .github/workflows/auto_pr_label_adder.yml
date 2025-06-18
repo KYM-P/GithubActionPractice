@@ -5,7 +5,7 @@ on:
 
 jobs:
   auto_pr_label_adder:
-    if: github.base_ref != 'production' && !startsWith(github.head_ref, 'release/')
+    if: github.base_ref != 'production' || !startsWith(github.head_ref, 'release/')
     runs-on: ubuntu-latest
     steps:
       - name: Check Team and Job From PR
@@ -18,10 +18,10 @@ jobs:
           declare -A TEAM_MAP
 
           # Team 별 REGEX
-          CAMPUS_REGEX="\[[cC][aA][mM][pP][uU][sS]\]"
-          BUSINESS_REGEX="\[[bB][uU][sS][iI][nN][eE][sS][sS]\]"
-          USER_REGEX="\[[uU][sS][eE][rR]\]"
-          KOIN_PROJECT_REGEX="\[[kK][oO][iI][nN][[:space:]][pP][rR][oO][jJ][eE][cC][tT]\]"
+          CAMPUS_REGEX="(?i)\[campus\]"
+          BUSINESS_REGEX="(?i)\[business\]"
+          USER_REGEX="(?i)\[user\]"
+          KOIN_PROJECT_REGEX="(?i)\[koin[[:space:]]?project\]"
 
           # Team 별 TAG
           CAMPUS_TAG="campus"
