@@ -77,7 +77,7 @@ jobs:
             if git branch --contains $commit_sha origin/production | grep -q 'origin/production'; then
               IN_PRODUCTION_PR="${IN_PRODUCTION_PRS},${pr_number}"
             else
-              gh pr edit 703 --add-label "not in production"
+              gh pr edit $pr_number --add-label "not in production"
             fi
           done
           
