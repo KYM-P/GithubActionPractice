@@ -78,6 +78,7 @@ jobs:
               IN_PRODUCTION_PR="${IN_PRODUCTION_PRS},${pr_number}"
             else
               gh pr edit 703 --add-label "not in production"
+            fi
           done
           
           echo "IN_PRODUCTION_PRS : $IN_PRODUCTION_PRS"
