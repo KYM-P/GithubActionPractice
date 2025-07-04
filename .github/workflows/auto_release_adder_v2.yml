@@ -47,6 +47,7 @@ jobs:
         id: pr_numbers
         run: |
           NOW_PR_NUMBERS=$(gh pr list \
+          --state all \
           --search "created:>=${{ env.RELEASE_DATE }}" \
           --json number \
           --jq '[.[].number] | join(",")')
@@ -54,10 +55,11 @@ jobs:
           
           BEFORE_TAG="not in production"
           BEFORE_PR_NUMBERS=$(gh pr list \
+          --state all \
           --label "$BEFORE_TAG" \
           --json number \
           --jq '[.[].number] | join(",")')
-          echo "BEFORE_PR_NUMBERS=$BEFORE_PR_NUMBERS"
+          echo "BEFORE_PR_NUMBERS : $BEFORE_PR_NUMBERS"
           
           PR_NUMBERS="${NOW_PR_NUMBERS},${BEFORE_PR_NUMBERS}"
           echo "PR_NUMBERS=$PR_NUMBERS" >> $GITHUB_ENV
