@@ -74,8 +74,9 @@ jobs:
           IFS=',' read -r -a PR_ARRAY <<< "$PR_NUMBERS"
           for pr_number in "${PR_ARRAY[@]}"; do
             commit_sha=$(gh pr view $pr_number --json commits --jq '.commits[-1].oid')
-            if git branch --contains $commit_sha origin/production | grep -q 'origin/production'; then
+            if git merge-base --is-ancestor $commit_sha origin/production; then
               IN_PRODUCTION_PR="${IN_PRODUCTION_PRS},${pr_number}"
+              gh pr edit $pr_number --remove-label "not in production"
             else
               gh pr edit $pr_number --add-label "not in production"
             fi
