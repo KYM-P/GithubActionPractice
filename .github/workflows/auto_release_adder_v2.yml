@@ -52,33 +52,43 @@ jobs:
           --json number \
           --jq '[.[].number] | join(",")')
           echo "NOW_PR_NUMBERS : $NOW_PR_NUMBERS"
+          echo "NOW_PR_NUMBERS=$NOW_PR_NUMBERS" >> $GITHUB_ENV
           
           BEFORE_TAG="not in production"
+          echo "BEFORE_TAG=$BEFORE_TAG" >> $GITHUB_ENV
           BEFORE_PR_NUMBERS=$(gh pr list \
           --state all \
           --label "$BEFORE_TAG" \
+          --search "created:<${{ env.RELEASE_DATE }}" \
           --json number \
           --jq '[.[].number] | join(",")')
           echo "BEFORE_PR_NUMBERS : $BEFORE_PR_NUMBERS"
-          
-          PR_NUMBERS="${NOW_PR_NUMBERS},${BEFORE_PR_NUMBERS}"
-          echo "PR_NUMBERS=$PR_NUMBERS" >> $GITHUB_ENV
+          echo "BEFORE_PR_NUMBERS=$BEFORE_PR_NUMBERS" >> $GITHUB_ENV
 
       - name: Check In Production PR
         id: check_in_production
         env:
-          PR_NUMBERS: ${{ env.PR_NUMBERS }}
+          BEFORE_TAG: ${{ env.BEFORE_TAG }}
+          NOW_PR_NUMBERS: ${{ env.NOW_PR_NUMBERS }}
+          BEFORE_PR_NUMBERS: ${{ env.BEFORE_PR_NUMBERS }}
         run: |
-          BEFORE_TAG="not in production"
           IN_PRODUCTION_PRS=""
-          IFS=',' read -r -a PR_ARRAY <<< "$PR_NUMBERS"
+          IFS=',' read -r -a PR_ARRAY <<< "$NOW_PR_NUMBERS"
           for pr_number in "${PR_ARRAY[@]}"; do
             commit_sha=$(gh pr view $pr_number --json commits --jq '.commits[-1].oid')
             if git merge-base --is-ancestor $commit_sha origin/production; then
-              IN_PRODUCTION_PR="${IN_PRODUCTION_PRS},${pr_number}"
-              gh pr edit $pr_number --remove-label "not in production"
+              IN_PRODUCTION_PRS="${IN_PRODUCTION_PRS},${pr_number}"
             else
-              gh pr edit $pr_number --add-label "not in production"
+              gh pr edit $pr_number --add-label "$BEFORE_TAG"
+            fi
+          done
+          
+          IFS=',' read -r -a PR_ARRAY <<< "$BEFORE_PR_NUMBERS"
+          for pr_number in "${PR_ARRAY[@]}"; do
+            commit_sha=$(gh pr view $pr_number --json commits --jq '.commits[-1].oid')
+            if git merge-base --is-ancestor $commit_sha origin/production; then
+              IN_PRODUCTION_PRS="${IN_PRODUCTION_PRS},${pr_number}"
+              gh pr edit $pr_number --remove-label "$BEFORE_TAG"
             fi
           done
           
