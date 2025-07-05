@@ -164,6 +164,7 @@ jobs:
               job_tag=""
               for label in $labels; do
                 for team in "${TEAM_TAG_GROUP[@]}"; do
+                  echo "label log : ${label} == ${team} ?"
                   if [[ "$label" == "$team" ]]; then
                     team_tag="$team"
                   fi
