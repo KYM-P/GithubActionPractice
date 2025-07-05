@@ -156,6 +156,7 @@ jobs:
           
           # IN_PRODUCTION_PRS 를 TAG 별로 구분
           group_prs() {
+            echo "Log - group_prs START"
             IFS=',' read -r -a PR_ARRAY <<< "$IN_PRODUCTION_PRS"
             for pr_number in "${PR_ARRAY[@]}"; do
               labels=$(gh pr view $pr_number --json labels --jq '.labels[].name')
@@ -176,20 +177,23 @@ jobs:
               if [[ -n "$team_tag" && -n "$job_tag" ]]; then
                 key="${team_tag}_${job_tag}"
                 TAG_GROUPS["$key"]+="${pr_number},"
-                echo "TAG_GROUPS[${key}]+ : ${TAG_GROUPS["${key}"]}"
+                echo "TAG_GROUPS[${key}] : ${TAG_GROUPS["${key}"]}"
               else
                 echo "PR #${pr_number} : Label conditions are not correct."
               fi
             done
+            echo "Log - group_prs END"
           }
           
           # 구분된 PR 들로 BODY 작성
           create_body() {
+            echo "Log - create_body START"
             for team in "${TEAM_TAG_GROUP[@]}"; do
               team_body=""
               for job in "${JOB_TAG_GROUP[@]}"; do
                 job_body=""
                 if [[ -v TAG_GROUPS["$team_$job"] ]]; then
+                  echo "CHECK TAG_GROUPS[${team}_${job}] : ${TAG_GROUPS["${team}_${job}"]}"
                   IFS=',' read -r -a PR_ARRAY <<< "$TAG_GROUPS["$team_$job"]"
                   for pr_number in "${PR_ARRAY[@]}"; do
                    title=$(gh pr view $pr_number --json title --jq '.title')
@@ -204,13 +208,16 @@ jobs:
               if [[ -n "$team_body" ]]; then
                 team_title="${TEAM_TITLE_GROUPS["$team"]}"
                 team_body="${team_title}${team_body}"
+                echo "TEAM_BODY - ${team} : ${team_body}"
               fi
               BODY+="${team_body}"
             done
+            echo "Log - create_body END"
           }
           
           # PR 분류
           group_prs
+          
           # 분류된 PR 로 BODY 작성
           create_body
           
