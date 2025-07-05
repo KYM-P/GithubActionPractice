@@ -205,6 +205,7 @@ jobs:
                     job_title="${JOB_TITLE_GROUPS["$job"]}"
                     job_body="${job_title}${job_body}"
                   }
+                  fi
                 fi
                 team_body+="${job_body}"
               done
