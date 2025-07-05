@@ -159,7 +159,7 @@ jobs:
             echo "Log - group_prs START"
             IFS=',' read -r -a PR_ARRAY <<< "$IN_PRODUCTION_PRS"
             for pr_number in "${PR_ARRAY[@]}"; do
-              eval labels=$(gh pr view $pr_number --json labels --jq '[.labels[].name] | @sh')"
+              eval "labels=($(gh pr view $pr_number --json labels --jq '[.labels[].name] | @sh'))"
               team_tag=""
               job_tag=""
               for label in ${labels[@]}; do
