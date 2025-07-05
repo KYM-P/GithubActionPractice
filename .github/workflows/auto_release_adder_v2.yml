@@ -83,6 +83,7 @@ jobs:
             # 해당 PR 에 맨 마지막 commit sha 추출
             commit_sha=$(gh pr view $pr_number --json commits --jq '.commits[-1].oid')
             # 해당 commit sha 가 production 에 포함 되어 있는지 검사
+            echo "PR #${pr_number} - commit_sha : ${commit_sha}"
             if git merge-base --is-ancestor $commit_sha origin/production; then
               # 있으면 IN_PRODUCTION_PRS 에 포함
               IN_PRODUCTION_PRS="${IN_PRODUCTION_PRS},${pr_number}"
@@ -96,7 +97,6 @@ jobs:
           IFS=',' read -r -a PR_ARRAY <<< "$BEFORE_PR_NUMBERS"
           for pr_number in "${PR_ARRAY[@]}"; do
             commit_sha=$(gh pr view $pr_number --json commits --jq '.commits[-1].oid')
-            echo "PR #${pr_number} - commit_sha : ${commit_sha}"
             if git merge-base --is-ancestor $commit_sha origin/production; then
               # 있으면 IN_PRODUCTION_PRS 에 포함 + not in production TAG 제거
               IN_PRODUCTION_PRS+="${pr_number},"
