@@ -50,6 +50,7 @@ jobs:
           NOW_PR_NUMBERS=$(gh pr list \
           --state merged \
           --search "created:>=${{ env.RELEASE_DATE }}" \
+          --limit 200 \
           --json number \
           --jq '[.[].number] | join(",")')
           echo "NOW_PR_NUMBERS : $NOW_PR_NUMBERS"
@@ -62,6 +63,7 @@ jobs:
           --state merged \
           --label "$BEFORE_TAG" \
           --search "created:<${{ env.RELEASE_DATE }}" \
+          --limit 400 \
           --json number \
           --jq '[.[].number] | join(",")')
           echo "BEFORE_PR_NUMBERS : $BEFORE_PR_NUMBERS"
