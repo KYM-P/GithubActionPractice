@@ -89,7 +89,7 @@ jobs:
             echo "PR #${pr_number} - commit_sha : ${commit_sha}"
             if git merge-base --is-ancestor $commit_sha origin/production; then
               # 있으면 IN_PRODUCTION_PRS 에 포함
-              IN_PRODUCTION_PRS="${IN_PRODUCTION_PRS},${pr_number}"
+              IN_PRODUCTION_PRS+="${pr_number},"
             else
               # 없으면 not in production TAG 추가
               gh pr edit $pr_number --add-label "$BEFORE_TAG"
