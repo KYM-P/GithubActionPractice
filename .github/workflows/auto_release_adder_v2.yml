@@ -9,7 +9,7 @@ jobs:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout The Branch
+      - name: Checkout The PR
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -81,7 +81,7 @@ jobs:
           IFS=',' read -r -a PR_ARRAY <<< "$NOW_PR_NUMBERS"
           for pr_number in "${PR_ARRAY[@]}"; do
             # 해당 PR 에 맨 마지막 commit sha 추출
-            commit_sha=$(git log -n 1 --pretty=format:"%H"')
+            commit_sha=$(git log -n 1 --pretty=format:"%H")
             # 해당 commit sha 가 production 에 포함 되어 있는지 검사
             echo "PR #${pr_number} - commit_sha : ${commit_sha}"
             if git merge-base --is-ancestor $commit_sha origin/production; then
