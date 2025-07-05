@@ -194,7 +194,7 @@ jobs:
                 job_body=""
                 echo "CHECK TAG_GROUPS[${team}_${job}] : ${TAG_GROUPS["${team}_${job}"]}"
                 if [[ -n TAG_GROUPS["$team_$job"] ]]; then
-                  IFS=',' read -r -a PR_ARRAY <<< "${TAG_GROUPS["${team}_${job}}"]"
+                  IFS=',' read -r -a PR_ARRAY <<< "${TAG_GROUPS["${team}_${job}"]}"
                   for pr_number in "${PR_ARRAY[@]}"; do
                     echo "SEARCH PR #${pr_number}"
                     title=$(gh pr view $pr_number --json title --jq '.title')
