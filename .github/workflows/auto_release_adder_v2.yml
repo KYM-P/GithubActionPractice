@@ -179,7 +179,7 @@ jobs:
                 TAG_GROUPS["$key"]+="${pr_number},"
                 echo "TAG_GROUPS[${key}] : ${TAG_GROUPS["${key}"]}"
               else
-                echo "PR #${pr_number} : Label conditions are not correct."
+                echo "PR #${pr_number} : Label conditions are not correct. - ${team_tag}_${job_tag}"
               fi
             done
             echo "Log - group_prs END"
@@ -199,7 +199,7 @@ jobs:
                     echo "SEARCH PR #${pr_number}"
                     title=$(gh pr view $pr_number --json title --jq '.title')
                     author=$(gh pr view $pr_number --json author --jq '.author.login')
-                    job_body+="- ${title} #${pr_number} ${author}\\n"
+                    job_body+="- ${title} #${pr_number} @${author}\\n"
                   done
                   if [[ -n "$job_body" ]]; then {
                     job_title="${JOB_TITLE_GROUPS["$job"]}"
