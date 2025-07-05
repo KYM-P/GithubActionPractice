@@ -98,7 +98,7 @@ jobs:
             commit_sha=$(gh pr view $pr_number --json commits --jq '.commits[-1].oid')
             if git merge-base --is-ancestor $commit_sha origin/production; then
               # 있으면 IN_PRODUCTION_PRS 에 포함 + not in production TAG 제거
-              IN_PRODUCTION_PRS="${IN_PRODUCTION_PRS}${pr_number},"
+              IN_PRODUCTION_PRS+="${pr_number},"
               gh pr edit $pr_number --remove-label "$BEFORE_TAG"
             fi
           done
@@ -173,11 +173,12 @@ jobs:
                   fi
                 done
               done
-              key="${team_tag}_${job_tag}"
               if [[ -n "$team_tag" && -n "$job_tag" ]]; then
+                key="${team_tag}_${job_tag}"
                 TAG_GROUPS["$key"]+="${pr_number},"
+                echo "TAG_GROUPS[${key}]+ : ${TAG_GROUPS["${key}"]}"
               else
-                echo "$pr_number : Label conditions are not correct."
+                echo "PR #${pr_number} : Label conditions are not correct."
               fi
             done
           }
