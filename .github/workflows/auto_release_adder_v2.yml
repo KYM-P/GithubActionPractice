@@ -201,8 +201,10 @@ jobs:
                     author=$(gh pr view $pr_number --json author --jq '.author.login')
                     job_body+="- ${title} #${pr_number} ${author}\\n"
                   done
-                  job_title="${JOB_TITLE_GROUPS["$job"]}"
-                  job_body="${job_title}${job_body}"
+                  if [[ -n "$job_body" ]]; then {
+                    job_title="${JOB_TITLE_GROUPS["$job"]}"
+                    job_body="${job_title}${job_body}"
+                  }
                 fi
                 team_body+="${job_body}"
               done
