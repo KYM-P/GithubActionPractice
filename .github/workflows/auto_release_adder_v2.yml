@@ -227,7 +227,7 @@ jobs:
           
           # 내용을 OUTPUT에 저장 (해당 BODY 가 최종본)
           echo "BODY : $BODY"
-          echo "BODY=$BODY\n" >> $GITHUB_OUTPUT
+          echo "BODY=$BODY" >> $GITHUB_ENV
 
       - name: Create Release
         env:
