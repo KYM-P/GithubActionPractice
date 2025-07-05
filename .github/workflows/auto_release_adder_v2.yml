@@ -193,12 +193,13 @@ jobs:
               for job in "${JOB_TAG_GROUP[@]}"; do
                 job_body=""
                 echo "CHECK TAG_GROUPS[${team}_${job}] : ${TAG_GROUPS["${team}_${job}"]}"
-                if [[ -v TAG_GROUPS["$team_$job"] ]]; then
+                if [[ -n TAG_GROUPS["$team_$job"] ]]; then
                   IFS=',' read -r -a PR_ARRAY <<< "$TAG_GROUPS["$team_$job"]"
                   for pr_number in "${PR_ARRAY[@]}"; do
-                   title=$(gh pr view $pr_number --json title --jq '.title')
-                   author=$(gh pr view $pr_number --json author --jq '.author.login')
-                   job_body+="- ${title} #${pr_number} ${author}\\n"
+                    echo "SEARCH PR #${pr_number}"
+                    title=$(gh pr view $pr_number --json title --jq '.title')
+                    author=$(gh pr view $pr_number --json author --jq '.author.login')
+                    job_body+="- ${title} #${pr_number} ${author}\\n"
                   done
                   job_title="${JOB_TITLE_GROUPS["$job"]}"
                   job_body="${job_title}${job_body}"
