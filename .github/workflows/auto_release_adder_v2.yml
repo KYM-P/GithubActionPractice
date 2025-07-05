@@ -96,6 +96,7 @@ jobs:
           IFS=',' read -r -a PR_ARRAY <<< "$BEFORE_PR_NUMBERS"
           for pr_number in "${PR_ARRAY[@]}"; do
             commit_sha=$(gh pr view $pr_number --json commits --jq '.commits[-1].oid')
+            echo "PR #${pr_number} - commit_sha : ${commit_sha}"
             if git merge-base --is-ancestor $commit_sha origin/production; then
               # 있으면 IN_PRODUCTION_PRS 에 포함 + not in production TAG 제거
               IN_PRODUCTION_PRS+="${pr_number},"
@@ -164,7 +165,6 @@ jobs:
               job_tag=""
               for label in "${labels[@]}"; do
                 for team in "${TEAM_TAG_GROUP[@]}"; do
-                  echo "label log : ${label} == ${team} ?"
                   if [[ "$label" == "$team" ]]; then
                     team_tag="$team"
                   fi
