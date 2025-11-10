@@ -19,8 +19,8 @@ jobs:
         id: get_version
         run: |
           VERSION=$(grep "versionName" build.gradle.kts | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+')
-          echo "VERSION_CODE : $VERSION"
-          echo "VERSION_CODE=$VERSION" >> $GITHUB_ENV
+          echo "VERSION_CODE : v$VERSION"
+          echo "VERSION_CODE=v$VERSION" >> $GITHUB_ENV
 
       - name: Show Fail Log
         if: ${{ env.VERSION_CODE == '' }}
