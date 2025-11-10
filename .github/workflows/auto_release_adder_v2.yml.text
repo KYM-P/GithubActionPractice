@@ -50,6 +50,7 @@ jobs:
           NOW_PR_NUMBERS=$(gh pr list \
           --state merged \
           --search "created:>=${{ env.RELEASE_DATE }}" \
+          --limit 200 \
           --json number \
           --jq '[.[].number] | join(",")')
           echo "NOW_PR_NUMBERS : $NOW_PR_NUMBERS"
@@ -62,6 +63,7 @@ jobs:
           --state merged \
           --label "$BEFORE_TAG" \
           --search "created:<${{ env.RELEASE_DATE }}" \
+          --limit 400 \
           --json number \
           --jq '[.[].number] | join(",")')
           echo "BEFORE_PR_NUMBERS : $BEFORE_PR_NUMBERS"
@@ -81,11 +83,13 @@ jobs:
           IFS=',' read -r -a PR_ARRAY <<< "$NOW_PR_NUMBERS"
           for pr_number in "${PR_ARRAY[@]}"; do
             # 해당 PR 에 맨 마지막 commit sha 추출
-            commit_sha=$(gh pr view $pr_number --json commits --jq '.commits[-1].oid')
+            git fetch origin pull/$pr_number/head:pr-$pr_number
+            commit_sha=$(git log pr-$pr_number --pretty=format:"%H" -n 1)
             # 해당 commit sha 가 production 에 포함 되어 있는지 검사
+            echo "PR #${pr_number} - commit_sha : ${commit_sha}"
             if git merge-base --is-ancestor $commit_sha origin/production; then
               # 있으면 IN_PRODUCTION_PRS 에 포함
-              IN_PRODUCTION_PRS="${IN_PRODUCTION_PRS},${pr_number}"
+              IN_PRODUCTION_PRS+="${pr_number},"
             else
               # 없으면 not in production TAG 추가
               gh pr edit $pr_number --add-label "$BEFORE_TAG"
@@ -164,7 +168,6 @@ jobs:
               job_tag=""
               for label in "${labels[@]}"; do
                 for team in "${TEAM_TAG_GROUP[@]}"; do
-                  echo "label log : ${label} == ${team} ?"
                   if [[ "$label" == "$team" ]]; then
                     team_tag="$team"
                   fi
