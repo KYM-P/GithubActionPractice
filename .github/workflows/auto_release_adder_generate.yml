@@ -15,7 +15,7 @@ jobs:
           fetch-depth: 0
           ref: production
 
-      - name: Get Version From Build.gradle.kts
+      - name: Get Version From "build.gradle.kts"
         id: get_version
         run: |
           VERSION=$(grep "versionName" build.gradle.kts | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+')
